@@ -147,7 +147,7 @@ Database → MongoDB Atlas
 👨‍💻 Author
 
 Rohit Jha
-📧 Email: rohit@gmail.com
+📧 Email: jharohit2222@gmail.com
 
 🔗 GitHub: @jharohit2003
 
