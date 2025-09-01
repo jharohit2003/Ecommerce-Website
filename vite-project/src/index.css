@@ -1,23 +1,33 @@
-@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@100..900&family=Prata&display=swap');
+/* Import classic, elegant fonts */
+@import url('https://fonts.googleapis.com/css2?family=Merriweather:wght@300;400;700&family=Playfair+Display:wght@400;700&display=swap');
 @import "tailwindcss";
 
-a.active hr{
-    display:block;
+/* Active link underline */
+a.active hr {
+    display: block;
 }
-*{
-    font-family: Outfit;
+
+/* Apply classic font globally */
+* {
+    font-family: 'Merriweather', serif;
 }
+
+/* Special styling for headings or highlights */
 .prata-regular {
-    font-family: "Prata", serif;
+    font-family: 'Playfair Display', serif;
     font-weight: 400;
     font-style: normal;
-  }
-  ::-webkit-scrollbar{
+}
+
+/* Hide scrollbar */
+::-webkit-scrollbar {
     display: none;
-  }
-  @media (max-width :640){
-    a.active{
+}
+
+/* Responsive styling */
+@media (max-width: 640px) {
+    a.active {
         background-color: black;
         color: white;
     }
-  }
+}

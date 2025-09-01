@@ -8,6 +8,7 @@ import Orders from './pages/Orders'
 import Login from './components/Login'
 import { ToastContainer} from 'react-toastify';
 
+
 export const backendUrl = import.meta.env.VITE_BACKEND_URL
 export const currency = '$'
 

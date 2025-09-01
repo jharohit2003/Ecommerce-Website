@@ -15,7 +15,7 @@ const [description , setDescription] = useState("");
 const [price , setPrice] = useState("");
 const [category , setcategory] = useState("Men");
 const [subCategory , setSubCategory] = useState("Topwear");
-const [bestseller , setBestseller] = useState(false);
+const [bestSeller , setBestSeller] = useState(false);
 const [sizes , setSizes] = useState([]);
 
 const onSubmithandler =async(e)=>{
@@ -26,7 +26,7 @@ try {
   formData.append("description",description)
   formData.append("category",category)
   formData.append("subCategory",subCategory)
-  formData.append("bestseller",bestseller)
+  formData.append("bestSeller",bestSeller)
    formData.append("price",price)
   formData.append("sizes",JSON.stringify(sizes))
 
@@ -135,8 +135,8 @@ try {
         </div>
       </div>
       <div className='flex gap-2 mt-2'>
-        <input onChange={()=>setBestseller(prev=>!prev)} checked={bestseller} type="checkbox" name="" id="bestSeller" />
-        <label className='cursor-ponter' htmlFor="bestseller">Add to bestseller</label>
+        <input onChange={()=>setBestSeller(prev=>!prev)} checked={bestSeller} type="checkbox" name="" id="bestSeller" />
+        <label className='cursor-ponter' htmlFor="bestSeller">Add to bestseller</label>
       </div>
       <button type="submit" className='w-28 py-3 px-4 bg-black text-white'>ADD</button>
     </form>

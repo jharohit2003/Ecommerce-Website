@@ -1,16 +1,38 @@
-@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@100..900&family=Prata&display=swap');
+/* Import elegant, classic fonts */
+@import url('https://fonts.googleapis.com/css2?family=Merriweather:wght@300;400;700&family=Playfair+Display:wght@400;700&display=swap');
 @import "tailwindcss";
 
-*{
-  font-family: Outfit;
-}
-select,input,textarea{
-border: 1px solid #c2c2c2;
-outline-color: #c586A5;
-border-radius: 4px;
+/* Global font */
+* {
+  font-family: 'Merriweather', serif;
 }
 
-.active{
-  background-color: #ffebf5;
-  border: color #c586a5;
+/* Form elements styling */
+select, input, textarea {
+  border: 1px solid #c2c2c2;
+  outline-color: #c586A5; /* highlight color on focus */
+  border-radius: 6px; /* slightly more rounded for a classy look */
+  padding: 8px 10px; /* added padding for better appearance */
+  transition: border-color 0.3s, box-shadow 0.3s;
 }
+
+select:focus,
+input:focus,
+textarea:focus {
+  border-color: #c586A5;
+  box-shadow: 0 0 5px rgba(197, 134, 165, 0.5); /* subtle glow on focus */
+}
+
+/* Active elements styling */
+.active {
+  background-color: #ffeef5; /* slightly softer pink */
+  border: 1px solid #c586a5; /* fixed border syntax */
+  color: #333; /* dark text for readability */
+  border-radius: 6px;
+  transition: background-color 0.3s, border-color 0.3s;
+}
+
+.active:hover {
+  background-color: #ffd9ec; /* subtle hover effect */
+}
+
