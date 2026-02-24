@@ -4,7 +4,7 @@ FROM node:18-alpine AS builder
 # Set working directory
 WORKDIR /app
 
-COPY package*json ./
+COPY package.json package-lock.json ./
 
 # Install exact dependencies (best for CI/CD)
 
