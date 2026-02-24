@@ -6,7 +6,10 @@ WORKDIR /app
 COPY package*json ./
 
 # Install exact dependencies (best for CI/CD)
+
 RUN npm ci
+
+# Copy entire source code
 COPY . .
 
 # Build the Vite app (creates dist folder)
