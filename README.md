@@ -139,7 +139,6 @@ ADMIN_EMAIL, ADMIN_PASSWORD → Default admin credentials
 Client (React App) → Vercel
 
 Backend (API) → Render
- / Railway
  / Heroku
 
 Database → MongoDB Atlas
