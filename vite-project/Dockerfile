@@ -1,29 +1,29 @@
-# ─────────────────────────────────────────────
-# Stage 1: Build — React Vite Frontend
-# ─────────────────────────────────────────────
-FROM node:20-alpine AS builder
+FROM node:18-alpine
 
 WORKDIR /app
 
-COPY package.json package-lock.json* ./
-RUN npm ci
+# Copy package files
+COPY package*.json ./
 
+# Install dependencies
+RUN npm ci --only=production
+
+# Copy source code
 COPY . .
-RUN npm run build
 
-# ─────────────────────────────────────────────
-# Stage 2: Serve with Nginx
-# ─────────────────────────────────────────────
-FROM nginx:1.25-alpine AS runner
+# Create non-root user
+RUN addgroup -g 1001 -S nodejs && \
+    adduser -S nodejs -u 1001 && \
+    chown -R nodejs:nodejs /app
 
-RUN rm -rf /usr/share/nginx/html/*
+USER nodejs
 
-COPY --from=builder /app/dist /usr/share/nginx/html
-COPY nginx.conf /etc/nginx/conf.d/default.conf
+# Expose port
+EXPOSE 4000
 
-EXPOSE 80
+# Health check
+HEALTHCHECK --interval=30s --timeout=3s --start-period=5s --retries=3 \
+  CMD node -e "require('http').get('http://localhost:4000/health', (r) => {r.statusCode === 200 ? process.exit(0) : process.exit(1)})"
 
-HEALTHCHECK --interval=30s --timeout=5s --start-period=10s --retries=3 \
-  CMD wget -qO- http://localhost/ || exit 1
-
-CMD ["nginx", "-g", "daemon off;"]
+# Start the application
+CMD ["npm", "start"]
