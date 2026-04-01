@@ -1,19 +1,49 @@
-name: vite-frontend CI/CD
+name: Build and Push Docker Images
 
+# Runs on every push to main, and on pull requests to main
 on:
- push:
-   branches: 
-     - "main"
- workflow_dispatch:
-
-concurrency:
-  group: ${{ github.workflow }}-${{ github.ref }}
-  cancel-in-progress: true
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
 
 jobs:
   build-and-push:
     runs-on: ubuntu-latest
 
     steps:
-    - name: checkout code
-      uses: actions/checkout@v6
+
+      # 1. Download your repo code onto the GitHub runner machine
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      # 2. Log in to Docker Hub using your GitHub secrets
+      - name: Log in to Docker Hub
+        uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+
+      # 3. Build and push the React frontend image
+      - name: Build and push frontend
+        uses: docker/build-push-action@v5
+        with:
+          context: ./vite-project
+          push: ${{ github.ref == 'refs/heads/main' }}
+          tags: ${{ secrets.DOCKERHUB_USERNAME }}/ecommerce-frontend:latest
+
+      # 4. Build and push the Admin panel image
+      - name: Build and push admin
+        uses: docker/build-push-action@v5
+        with:
+          context: ./admin
+          push: ${{ github.ref == 'refs/heads/main' }}
+          tags: ${{ secrets.DOCKERHUB_USERNAME }}/ecommerce-admin:latest
+
+      # 5. Build and push the Node.js backend image
+      - name: Build and push backend
+        uses: docker/build-push-action@v5
+        with:
+          context: ./Backend
+          push: ${{ github.ref == 'refs/heads/main' }}
+          tags: ${{ secrets.DOCKERHUB_USERNAME }}/ecommerce-backend:latest

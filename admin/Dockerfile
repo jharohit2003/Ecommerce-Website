@@ -1,5 +1,5 @@
 # ─────────────────────────────────────────────
-# Stage 1: Build — React Vite Frontend
+# Stage 1: Build — React Admin Panel (Vite)
 # ─────────────────────────────────────────────
 FROM node:20-alpine AS builder
 
