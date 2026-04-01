@@ -1,36 +1,29 @@
-# ─────────────────────────────────────────────
-# Stage 1: Install production dependencies only
-# ─────────────────────────────────────────────
-FROM node:20-alpine AS deps
+FROM node:18-alpine
 
 WORKDIR /app
 
-COPY package.json package-lock.json* ./
-RUN npm ci --omit=dev
+# Copy package files
+COPY package*.json ./
 
-# ─────────────────────────────────────────────
-# Stage 2: Production runtime
-# ─────────────────────────────────────────────
-FROM node:20-alpine AS runner
-
-# Create non-root user for security
-RUN addgroup -S appgroup && adduser -S appuser -G appgroup
-
-WORKDIR /app
-
-# Copy only production node_modules
-COPY --from=deps /app/node_modules ./node_modules
+# Install dependencies
+RUN npm ci --only=production
 
 # Copy source code
 COPY . .
 
-# Switch to non-root user
-USER appuser
+# Create non-root user
+RUN addgroup -g 1001 -S nodejs && \
+    adduser -S nodejs -u 1001 && \
+    chown -R nodejs:nodejs /app
 
-# Backend runs on port 4000
+USER nodejs
+
+# Expose port
 EXPOSE 4000
 
-HEALTHCHECK --interval=30s --timeout=5s --start-period=15s --retries=3 \
-  CMD wget -qO- http://localhost:4000/ || exit 1
+# Health check
+HEALTHCHECK --interval=30s --timeout=3s --start-period=5s --retries=3 \
+  CMD node -e "require('http').get('http://localhost:4000/health', (r) => {r.statusCode === 200 ? process.exit(0) : process.exit(1)})"
 
-CMD ["node", "server.js"]
+# Start the application
+CMD ["npm", "start"]
