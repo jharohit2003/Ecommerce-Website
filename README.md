@@ -65,7 +65,7 @@ Cloudinary (Image Storage)
 
 ⚙️ Installation & Setup
 🔹 Clone Repositories
-# Clone client (frontend)
+# Clone client
 git clone https://github.com/jharohit2003/Ecommerce-Website.git
 cd Ecommerce-Website
 
