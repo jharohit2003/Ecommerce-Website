@@ -5,10 +5,10 @@ import { backendUrl } from '../App'
 import { toast } from 'react-toastify'
 
 const Add = ({token}) => {
-const [image1 , setImage1] = useState(false)
-const [image2 , setImage2] = useState(false)
-const [image3 , setImage3] = useState(false)
-const [image4 , setImage4] = useState(false)
+const [image1 , setImage1] = useState<any>(false)
+const [image2 , setImage2] = useState<any>(false)
+const [image3 , setImage3] = useState<any>(false)
+const [image4 , setImage4] = useState<any>(false)
 
 const [name , setname] = useState("");
 const [description , setDescription] = useState("");
@@ -26,7 +26,7 @@ try {
   formData.append("description",description)
   formData.append("category",category)
   formData.append("subCategory",subCategory)
-  formData.append("bestSeller",bestSeller)
+  formData.append("bestSeller",String(bestSeller))
    formData.append("price",price)
   formData.append("sizes",JSON.stringify(sizes))
 
