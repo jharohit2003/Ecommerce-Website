@@ -1,7 +1,8 @@
 import { createContext ,useEffect,useState } from "react";
 import { toast } from "react-toastify";
 import { Navigate, useNavigate } from "react-router-dom";
- export const ShopContext= createContext();
+ // ponytail: any-typed context preserves the pre-migration untyped behaviour; give it a real value type when flipping strict on
+ export const ShopContext= createContext<any>({});
  import axios from 'axios'
 
  const ShopContextProvider =(props)=>{
