@@ -4,8 +4,10 @@
   "main": "index.js",
   "type": "module",
   "scripts": {
-    "start": "node server.js",
-    "server": "nodemon server.js"
+    "start": "node dist/server.js",
+    "server": "tsx watch server.ts",
+    "build": "tsc",
+    "typecheck": "tsc --noEmit"
   },
   "author": "",
   "license": "ISC",
@@ -24,5 +26,16 @@
     "razorpay": "^2.9.6",
     "stripe": "^18.3.0",
     "validator": "^13.15.15"
+  },
+  "devDependencies": {
+    "@types/bcrypt": "^6.0.0",
+    "@types/cors": "^2.8.19",
+    "@types/express": "^5.0.6",
+    "@types/jsonwebtoken": "^9.0.10",
+    "@types/multer": "^2.2.0",
+    "@types/node": "^26.1.1",
+    "@types/validator": "^13.15.10",
+    "tsx": "^4.23.1",
+    "typescript": "^7.0.2"
   }
 }
