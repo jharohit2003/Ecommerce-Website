@@ -1,32 +1,18 @@
-import axios from 'axios'
-import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
-import { backendUrl, currency } from '../App'
+import { currency } from '../App'
 import { toast } from 'react-toastify'
+import { useProducts } from '../hooks/useProducts'
+import { useRemoveProduct } from '../hooks/useProductMutations'
 
-const List = ({ token }) => {
-  const queryClient = useQueryClient()
+const List = () => {
+  const { data: list = [] } = useProducts()
+  const removeMutation = useRemoveProduct()
 
-  const { data: list = [] } = useQuery({
-    queryKey: ['products'],
-    queryFn: async () => {
-      const { data } = await axios.get(backendUrl + '/api/product/list')
-      if (!data.success) throw new Error(data.message)
-      return data.products
-    },
-  })
-
-  const removeMutation = useMutation({
-    mutationFn: async (id: string) => {
-      const { data } = await axios.post(backendUrl + '/api/product/remove', { id }, { headers: { token } })
-      if (!data.success) throw new Error(data.message)
-      return data.message as string
-    },
-    onSuccess: (message) => {
-      toast.success(message)
-      queryClient.invalidateQueries({ queryKey: ['products'] })
-    },
-    onError: (err) => toast.error(err instanceof Error ? err.message : 'Failed to remove'),
-  })
+  const handleRemove = (id: string) => {
+    removeMutation.mutate(id, {
+      onSuccess: (message) => toast.success(message),
+      onError: (err) => toast.error(err instanceof Error ? err.message : 'Failed to remove'),
+    })
+  }
 
   return (
     <>
@@ -48,7 +34,7 @@ const List = ({ token }) => {
             <p>{item.name}</p>
             <p>{item.category}</p>
             <p>{currency}{item.price}</p>
-            <p onClick={() => removeMutation.mutate(item._id)} className='text-right md:text-center cursor-pointer text-lg'>X</p>
+            <p onClick={() => handleRemove(item._id)} className='text-right md:text-center cursor-pointer text-lg'>X</p>
           </div>
         ))}
       </div>

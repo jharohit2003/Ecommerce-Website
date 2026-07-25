@@ -1,23 +1,12 @@
 import { useState } from 'react'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
-import { z } from 'zod'
-import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { assets } from '../assets/assets'
-import axios from 'axios'
-import { backendUrl } from '../App'
 import { toast } from 'react-toastify'
+import { addProductSchema, type AddProductValues } from '../lib/schemas'
+import { useAddProduct } from '../hooks/useProductMutations'
 
-const schema = z.object({
-  name: z.string().min(1, 'Name is required'),
-  description: z.string().min(1, 'Description is required'),
-  price: z.string().min(1, 'Price is required'),
-  category: z.string().min(1),
-  subCategory: z.string().min(1),
-})
-type FormValues = z.infer<typeof schema>
-
-const Add = ({ token }) => {
+const Add = () => {
   const [image1, setImage1] = useState<any>(false)
   const [image2, setImage2] = useState<any>(false)
   const [image3, setImage3] = useState<any>(false)
@@ -25,42 +14,13 @@ const Add = ({ token }) => {
   const [bestSeller, setBestSeller] = useState(false)
   const [sizes, setSizes] = useState<string[]>([])
 
-  const queryClient = useQueryClient()
-  const { register, handleSubmit, reset, formState: { errors } } = useForm<FormValues>({
-    resolver: zodResolver(schema),
+  const { register, handleSubmit, reset, formState: { errors } } = useForm<AddProductValues>({
+    resolver: zodResolver(addProductSchema),
     defaultValues: { category: 'Men', subCategory: 'Topwear' },
   })
+  const mutation = useAddProduct()
 
-  const mutation = useMutation({
-    mutationFn: async (values: FormValues) => {
-      const formData = new FormData()
-      formData.append('name', values.name)
-      formData.append('description', values.description)
-      formData.append('category', values.category)
-      formData.append('subCategory', values.subCategory)
-      formData.append('bestSeller', String(bestSeller))
-      formData.append('price', values.price)
-      formData.append('sizes', JSON.stringify(sizes))
-      image1 && formData.append('image1', image1)
-      image2 && formData.append('image2', image2)
-      image3 && formData.append('image3', image3)
-      image4 && formData.append('image4', image4)
-
-      const { data } = await axios.post(backendUrl + '/api/product/add', formData, { headers: { token } })
-      if (!data.success) throw new Error(data.message)
-      return data.message as string
-    },
-    onSuccess: (message) => {
-      toast.success(message)
-      reset()
-      setImage1(false); setImage2(false); setImage3(false); setImage4(false)
-      setSizes([]); setBestSeller(false)
-      queryClient.invalidateQueries({ queryKey: ['products'] })
-    },
-    onError: (err) => toast.error(err instanceof Error ? err.message : 'Failed to add product'),
-  })
-
-  const onSubmit = (values: FormValues) => {
+  const onSubmit = (values: AddProductValues) => {
     if (!image1 && !image2 && !image3 && !image4) {
       toast.error('Please upload at least one image')
       return
@@ -69,7 +29,29 @@ const Add = ({ token }) => {
       toast.error('Please select at least one size')
       return
     }
-    mutation.mutate(values)
+
+    const formData = new FormData()
+    formData.append('name', values.name)
+    formData.append('description', values.description)
+    formData.append('category', values.category)
+    formData.append('subCategory', values.subCategory)
+    formData.append('bestSeller', String(bestSeller))
+    formData.append('price', values.price)
+    formData.append('sizes', JSON.stringify(sizes))
+    image1 && formData.append('image1', image1)
+    image2 && formData.append('image2', image2)
+    image3 && formData.append('image3', image3)
+    image4 && formData.append('image4', image4)
+
+    mutation.mutate(formData, {
+      onSuccess: (message) => {
+        toast.success(message)
+        reset()
+        setImage1(false); setImage2(false); setImage3(false); setImage4(false)
+        setSizes([]); setBestSeller(false)
+      },
+      onError: (err) => toast.error(err instanceof Error ? err.message : 'Failed to add product'),
+    })
   }
 
   return (
