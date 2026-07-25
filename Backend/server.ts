@@ -15,8 +15,6 @@ const port = process.env.PORT || 4000
 // middlewares
 app.use(express.json())
 app.use(cors())
-  connectDB();
-  connectCloudinary();
 
 // api endpoints
 app.use('/api/user', userRouter)
@@ -26,4 +24,15 @@ app.get('/',(req,res)=>{
 res.send("API Working");
 })
 
-app.listen(port , ()=> console.log(`server started on PORT: ` + port))
+const start = async () => {
+  try {
+    await connectDB()
+    await connectCloudinary()
+    app.listen(port, () => console.log(`server started on PORT: ` + port))
+  } catch (err) {
+    console.error("Startup failed:", err instanceof Error ? err.message : err)
+    process.exit(1)
+  }
+}
+
+start()
