@@ -1,35 +1,24 @@
 import { useContext, useState } from 'react'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
-import { z } from 'zod'
 import Title from '../components/Title'
 import CartTotal from '../components/CartTotal'
 import { assets } from '../assets/assets'
 import { ShopContext } from '../context/ShopContext'
-
-const schema = z.object({
-  firstName: z.string().min(1, 'Required'),
-  lastName: z.string().min(1, 'Required'),
-  email: z.string().email('Enter a valid email'),
-  street: z.string().min(1, 'Required'),
-  zipcode: z.string().min(1, 'Required'),
-  country: z.string().min(1, 'Required'),
-  phone: z.string().min(6, 'Enter a valid phone number'),
-})
-type FormValues = z.infer<typeof schema>
+import { placeOrderSchema, type PlaceOrderValues } from '../lib/schemas'
 
 const fieldError = 'text-red-500 text-xs'
 
 const PlaceOrder = () => {
   const [method, setMethod] = useState('cod');
   const { navigate } = useContext(ShopContext);
-  const { register, handleSubmit, formState: { errors } } = useForm<FormValues>({
-    resolver: zodResolver(schema),
+  const { register, handleSubmit, formState: { errors } } = useForm<PlaceOrderValues>({
+    resolver: zodResolver(placeOrderSchema),
   })
 
   // ponytail: no order endpoint exists yet; on a valid form we just navigate as before.
   // Wire a useMutation POST here once the backend exposes /api/order.
-  const onSubmit = (_values: FormValues) => {
+  const onSubmit = (_values: PlaceOrderValues) => {
     navigate('/orders')
   }
 

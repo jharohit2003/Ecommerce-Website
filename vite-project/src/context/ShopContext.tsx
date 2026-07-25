@@ -1,10 +1,9 @@
 import { createContext ,useEffect,useState } from "react";
-import { useQuery } from "@tanstack/react-query";
 import { toast } from "react-toastify";
 import { Navigate, useNavigate } from "react-router-dom";
+import { useProducts } from "../hooks/useProducts";
  // ponytail: any-typed context preserves the pre-migration untyped behaviour; give it a real value type when flipping strict on
  export const ShopContext= createContext<any>({});
- import axios from 'axios'
 
  const ShopContextProvider =(props)=>{
     const currency='$';
@@ -78,14 +77,7 @@ const getCartCount =()=>{
   return totalAmount;
  }
 
- const { data: products = [] } = useQuery({
-    queryKey: ['products'],
-    queryFn: async () => {
-      const response = await axios.get(backendUrl + '/api/product/list')
-      if (!response.data.success) throw new Error(response.data.message)
-      return response.data.products
-    },
- })
+ const { data: products = [] } = useProducts()
  useEffect(()=>{
     if(!token && localStorage.getItem('token')){
          setToken(localStorage.getItem('token'))

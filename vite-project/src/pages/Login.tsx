@@ -1,48 +1,39 @@
 import { useContext, useEffect, useState } from 'react'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
-import { z } from 'zod'
-import { useMutation } from '@tanstack/react-query'
-import { ShopContext } from '../context/ShopContext';
-import axios from 'axios';
-import { toast } from 'react-toastify';
-
-// ponytail: password-strength (min 8) and name-required for Sign Up are enforced
-// server-side by the backend Zod schemas, which return clear messages we toast.
-const schema = z.object({
-  name: z.string().optional(),
-  email: z.string().email('Enter a valid email'),
-  password: z.string().min(1, 'Password is required'),
-})
-type FormValues = z.infer<typeof schema>
+import { ShopContext } from '../context/ShopContext'
+import { toast } from 'react-toastify'
+import { authSchema, type AuthValues } from '../lib/schemas'
+import { useAuthMutation } from '../hooks/useAuth'
+import type { AuthMode } from '../api/auth'
 
 const Login = () => {
-  const [currentState, setCurrentState] = useState('Login');
-  const { token, setToken, navigate, backendUrl } = useContext(ShopContext);
-  const { register, handleSubmit, formState: { errors } } = useForm<FormValues>({
-    resolver: zodResolver(schema),
+  const [currentState, setCurrentState] = useState<AuthMode>('Login')
+  const { token, setToken, navigate } = useContext(ShopContext)
+  const { register, handleSubmit, formState: { errors } } = useForm<AuthValues>({
+    resolver: zodResolver(authSchema),
   })
+  const mutation = useAuthMutation()
 
-  const mutation = useMutation({
-    mutationFn: async (values: FormValues) => {
-      const endpoint = currentState === 'Sign Up' ? '/api/user/register' : '/api/user/login'
-      const { data } = await axios.post(backendUrl + endpoint, values)
-      if (!data.success) throw new Error(data.message)
-      return data.token as string
-    },
-    onSuccess: (t) => {
-      setToken(t)
-      localStorage.setItem('token', t)
-    },
-    onError: (err) => toast.error(err instanceof Error ? err.message : 'Something went wrong'),
-  })
+  const onSubmit = (values: AuthValues) => {
+    mutation.mutate(
+      { mode: currentState, values },
+      {
+        onSuccess: (t) => {
+          setToken(t)
+          localStorage.setItem('token', t)
+        },
+        onError: (err) => toast.error(err instanceof Error ? err.message : 'Something went wrong'),
+      }
+    )
+  }
 
   useEffect(() => {
     if (token) navigate('/')
   }, [token])
 
   return (
-    <form onSubmit={handleSubmit((v) => mutation.mutate(v))} className='flex flex-col items-center w-[90%] sm:max-w-96 m-auto mt-14 gap-4 text-gray-800'>
+    <form onSubmit={handleSubmit(onSubmit)} className='flex flex-col items-center w-[90%] sm:max-w-96 m-auto mt-14 gap-4 text-gray-800'>
       <div className="inline-flex items-center gap-2 mb-2 mt-10">
         <p className='prata-regular text-3xl'>{currentState}</p>
         <hr className='border-none h-[1.5px] w-8 bg-gray-800' />
