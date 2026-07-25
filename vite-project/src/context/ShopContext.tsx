@@ -1,4 +1,5 @@
 import { createContext ,useEffect,useState } from "react";
+import { useQuery } from "@tanstack/react-query";
 import { toast } from "react-toastify";
 import { Navigate, useNavigate } from "react-router-dom";
  // ponytail: any-typed context preserves the pre-migration untyped behaviour; give it a real value type when flipping strict on
@@ -12,7 +13,6 @@ import { Navigate, useNavigate } from "react-router-dom";
     const [search,setSearch]=useState('');
     const [showSearch,setShowSearch]=useState(false);
     const[cartItems,setCartItems] = useState({});
-    const [products , setProducts]= useState([]);
     const[token , setToken] = useState('')
     const navigate = useNavigate();
 
@@ -78,22 +78,14 @@ const getCartCount =()=>{
   return totalAmount;
  }
 
- const getProductsData = async()=>{
-  try {
-    const response = await axios.get(backendUrl +'/api/product/list')
-    if(response.data.success){
-        setProducts(response.data.products)
-    }else{
-        toast.error(response.data.message);
-    }
-    
-  } catch (error) {
-     toast.error(error.message);
-  }
- }
- useEffect(()=>{
-    getProductsData();
- },[])
+ const { data: products = [] } = useQuery({
+    queryKey: ['products'],
+    queryFn: async () => {
+      const response = await axios.get(backendUrl + '/api/product/list')
+      if (!response.data.success) throw new Error(response.data.message)
+      return response.data.products
+    },
+ })
  useEffect(()=>{
     if(!token && localStorage.getItem('token')){
          setToken(localStorage.getItem('token'))
