@@ -1,0 +1,19 @@
+name: vite CI/CD
+
+on:
+ push:
+   branches: 
+     - "main"
+ workflow_dispatch:
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build-and-push:
+  runs-on: ubuntu-latest
+
+  setps:
+  - name: checkout code
+    uses: actions/checkout@v6
